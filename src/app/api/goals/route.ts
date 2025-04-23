@@ -7,6 +7,7 @@ import { prisma } from '@/lib/prisma';
 // GET /api/goals - Get all goals for the current user
 export async function GET() {
   try {
+    // @ts-expect-error - TypeScript error for authOptions parameter typing
     const session = await getServerSession(authOptions);
     
     if (!session || !session.user) {
@@ -43,6 +44,7 @@ export async function GET() {
 // POST /api/goals - Create a new goal
 export async function POST(request: Request) {
   try {
+    // @ts-expect-error - TypeScript error for authOptions parameter typing
     const session = await getServerSession(authOptions);
     
     if (!session || !session.user) {
@@ -62,6 +64,15 @@ export async function POST(request: Request) {
     
     const { title, description, targetReps, endDate } = await request.json();
     
+    // Log the goal data being created
+    console.log('Creating goal:', { 
+      title, 
+      description, 
+      targetReps, 
+      endDate,
+      userId: user.id
+    });
+    
     // Validate required fields
     if (!title) {
       return NextResponse.json({ error: "Title is required" }, { status: 400 });
@@ -79,11 +90,14 @@ export async function POST(request: Request) {
         targetReps,
         currentReps: 0,
         startDate: new Date(),
-        endDate: endDate || null,
+        endDate: endDate ? new Date(endDate) : null,
         completed: false,
         userId: user.id,
       },
     });
+    
+    // Log successful goal creation
+    console.log('Goal created successfully:', goal);
     
     return NextResponse.json(goal, { status: 201 });
   } catch (error) {

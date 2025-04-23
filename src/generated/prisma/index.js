@@ -84,9 +84,6 @@ Prisma.NullTypes = {
  * Enums
  */
 exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
-  ReadUncommitted: 'ReadUncommitted',
-  ReadCommitted: 'ReadCommitted',
-  RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
 });
 
@@ -186,11 +183,6 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
-exports.Prisma.QueryMode = {
-  default: 'default',
-  insensitive: 'insensitive'
-};
-
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
@@ -246,18 +238,17 @@ const config = {
   "datasourceNames": [
     "db"
   ],
-  "activeProvider": "postgresql",
-  "postinstall": false,
+  "activeProvider": "sqlite",
   "inlineDatasources": {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL",
-        "value": null
+        "value": "file:./reppi.db"
       }
     }
   },
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id            String    @id @default(cuid())\n  name          String?\n  email         String?   @unique\n  emailVerified DateTime?\n  image         String?\n  password      String?\n  createdAt     DateTime  @default(now())\n  updatedAt     DateTime  @updatedAt\n\n  accounts   Account[]\n  sessions   Session[]\n  goals      Goal[]\n  repLogs    RepLog[]\n  objectives Objective[]\n  notes      Note[]\n  categories Category[]\n}\n\nmodel Account {\n  id                String  @id @default(cuid())\n  userId            String\n  type              String\n  provider          String\n  providerAccountId String\n  refresh_token     String?\n  access_token      String?\n  expires_at        Int?\n  token_type        String?\n  scope             String?\n  id_token          String?\n  session_state     String?\n\n  user User @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@unique([provider, providerAccountId])\n}\n\nmodel Session {\n  id           String   @id @default(cuid())\n  sessionToken String   @unique\n  userId       String\n  expires      DateTime\n  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n}\n\nmodel VerificationToken {\n  identifier String\n  token      String   @unique\n  expires    DateTime\n\n  @@unique([identifier, token])\n}\n\nmodel Goal {\n  id          String    @id @default(cuid())\n  title       String\n  description String?\n  targetReps  Int\n  currentReps Int       @default(0)\n  startDate   DateTime  @default(now())\n  endDate     DateTime?\n  completed   Boolean   @default(false)\n  createdAt   DateTime  @default(now())\n  updatedAt   DateTime  @updatedAt\n  userId      String\n\n  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n  repLogs RepLog[]\n}\n\nmodel RepLog {\n  id        String   @id @default(cuid())\n  count     Int\n  notes     String?\n  createdAt DateTime @default(now())\n  goalId    String\n  userId    String\n\n  goal Goal @relation(fields: [goalId], references: [id], onDelete: Cascade)\n  user User @relation(fields: [userId], references: [id], onDelete: Cascade)\n}\n\nmodel Category {\n  id        String   @id @default(cuid())\n  name      String\n  type      String // \"objective\" or \"note\"\n  createdAt DateTime @default(now())\n  userId    String\n\n  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)\n  objectives Objective[]\n  notes      Note[]\n\n  @@unique([name, type, userId])\n}\n\nmodel Objective {\n  id         String   @id @default(cuid())\n  title      String\n  completed  Boolean  @default(false)\n  date       DateTime @default(now())\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n  categoryId String\n  userId     String\n\n  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)\n  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n}\n\nmodel Note {\n  id         String   @id @default(cuid())\n  title      String\n  content    String\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n  categoryId String\n  userId     String\n\n  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)\n  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n}\n",
-  "inlineSchemaHash": "69905fe1dfb79b749158eb41744ac0c09dabcbbc5d9b0076370334438ffc5c37",
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id            String    @id @default(cuid())\n  name          String?\n  email         String?   @unique\n  emailVerified DateTime?\n  image         String?\n  password      String?\n  createdAt     DateTime  @default(now())\n  updatedAt     DateTime  @updatedAt\n\n  accounts   Account[]\n  sessions   Session[]\n  goals      Goal[]\n  repLogs    RepLog[]\n  objectives Objective[]\n  notes      Note[]\n  categories Category[]\n}\n\nmodel Account {\n  id                String  @id @default(cuid())\n  userId            String\n  type              String\n  provider          String\n  providerAccountId String\n  refresh_token     String?\n  access_token      String?\n  expires_at        Int?\n  token_type        String?\n  scope             String?\n  id_token          String?\n  session_state     String?\n\n  user User @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@unique([provider, providerAccountId])\n}\n\nmodel Session {\n  id           String   @id @default(cuid())\n  sessionToken String   @unique\n  userId       String\n  expires      DateTime\n  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n}\n\nmodel VerificationToken {\n  identifier String\n  token      String   @unique\n  expires    DateTime\n\n  @@unique([identifier, token])\n}\n\nmodel Goal {\n  id          String    @id @default(cuid())\n  title       String\n  description String?\n  targetReps  Int\n  currentReps Int       @default(0)\n  startDate   DateTime  @default(now())\n  endDate     DateTime?\n  completed   Boolean   @default(false)\n  createdAt   DateTime  @default(now())\n  updatedAt   DateTime  @updatedAt\n  userId      String\n\n  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n  repLogs RepLog[]\n}\n\nmodel RepLog {\n  id        String   @id @default(cuid())\n  count     Int\n  notes     String?\n  createdAt DateTime @default(now())\n  goalId    String\n  userId    String\n\n  goal Goal @relation(fields: [goalId], references: [id], onDelete: Cascade)\n  user User @relation(fields: [userId], references: [id], onDelete: Cascade)\n}\n\nmodel Category {\n  id        String   @id @default(cuid())\n  name      String\n  type      String // \"objective\" or \"note\"\n  createdAt DateTime @default(now())\n  userId    String\n\n  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)\n  objectives Objective[]\n  notes      Note[]\n\n  @@unique([name, type, userId])\n}\n\nmodel Objective {\n  id         String   @id @default(cuid())\n  title      String\n  completed  Boolean  @default(false)\n  date       DateTime @default(now())\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n  categoryId String\n  userId     String\n\n  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)\n  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n}\n\nmodel Note {\n  id         String   @id @default(cuid())\n  title      String\n  content    String\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n  categoryId String\n  userId     String\n\n  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)\n  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n}\n",
+  "inlineSchemaHash": "6e2095289210b7b4c2a5888977f81b94cd76c6a1e6bed1fd98788a61464ed3ad",
   "copyEngine": true
 }
 
