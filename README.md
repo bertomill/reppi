@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Reppi - Track Your Reps
 
-## Getting Started
+A modern web application for tracking your workout reps and progress towards your fitness goals.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- User authentication
+- Goal creation and tracking
+- Rep logging
+- Progress tracking
+
+## Technology Stack
+
+- **Frontend**: Next.js 15, React, Tailwind CSS
+- **Backend**: Next.js API Routes
+- **Database**: SQLite (development) / Supabase (production)
+- **Authentication**: NextAuth.js
+
+## Project Structure
+
+This project uses a feature-based architecture with a high degree of separation of concerns:
+
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── api/                # API routes
+│   ├── dashboard/          # Dashboard page
+│   ├── goals/              # Goals pages
+│   ├── login/              # Login page
+│   └── register/           # Registration page
+├── features/               # Feature folders
+│   ├── auth/               # Authentication feature
+│   │   ├── api/            # Auth API utilities
+│   │   └── components/     # Auth components (LoginForm, RegisterForm)
+│   ├── common/             # Shared utilities
+│   │   ├── types/          # Shared type definitions
+│   │   └── utils/          # Shared utility functions
+│   ├── dashboard/          # Dashboard feature
+│   │   └── components/     # Dashboard components
+│   ├── goals/              # Goals feature
+│   │   ├── api/            # Goals API utilities
+│   │   └── components/     # Goal-related components
+│   └── repLogs/            # Rep Logs feature
+│       ├── api/            # Rep Logs API utilities
+│       └── components/     # Rep logging components
+└── lib/                    # Shared libraries
+    └── prisma.ts           # Prisma client
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Development
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Prerequisites
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Node.js 18+ and npm
 
-## Learn More
+### Setup
 
-To learn more about Next.js, take a look at the following resources:
+1. Clone the repository
+2. Install dependencies:
+   ```
+   npm install
+   ```
+3. Set up environment variables by copying `.env.example` to `.env`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+4. Run the development server:
+   ```
+   npm run dev
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Database
 
-## Deploy on Vercel
+The application uses SQLite for development and can be configured to use PostgreSQL via Supabase for production.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Prisma
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+We use Prisma as our ORM. The schema is defined in `prisma/schema.prisma`.
+
+To update the database after schema changes:
+
+```
+npx prisma generate
+npx prisma db push
+```
+
+## Deployment
+
+For production deployment, it's recommended to use a PostgreSQL database like Supabase.
+
+Update the `DATABASE_URL` in the `.env` file to point to your production database.
+
+## License
+
+MIT
